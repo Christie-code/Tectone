@@ -13,19 +13,104 @@
         <div id="map">
             
         </div>
-        <div id="container">
+        <div class="container">
             <div id="search-location">
                 <img id="logo-image" src="images/tectone.png" alt="tectone.png"/>
                 <img class="divider" src="images/divider.png" alt="divider">
                 <input id="search-earthquake" type="text" placeholder= "Enter Your Location"/>
                 <div id="search-button">
-                    <input type="image" src="images/search.png" alt="search button" >
+                    <input type="image"  id="search-button" src="images/search.png" alt="search button" >
                     <img class="divider" src="images/divider.png" alt="divider">
-                    <input type="image" src="images/filter.png" alt="filter button" >
+                    <input type="image" id="filter-button" src="images/filter.png" alt="filter button" >
     
                 </div>
             </div> 
-        </div>    
+            <div id="filter" class="hide">
+                <img id="close-filter" src="images/close.png">
+                <h4>Filter earthquakes to show:</h4>
+                <div id="filter-class-container">
+                    <div class="sub-filter">
+                        <div id="filter4" class="filter-class">
+                            <p><4</p>
+                        </div>
+                        <p class="parameters">Magnitude</p>
+                    </div>
+                    <div class="sub-filter">
+                        <div id="filter6" class="filter-class">
+                            <p><6</p>
+                        </div>
+                        <p class="parameters">Magnitude</p>
+                    </div>
+                    <div class="sub-filter">
+                        <div id="filter8" class="filter-class">
+                            <p><8</p>
+                        </div>
+                        <p class="parameters">Magnitude</p>
+                    </div>
+                    <div  class="sub-filter">
+                        <div id="filter10" class="filter-class">
+                            <p>>10</p>
+                        </div>
+                        <p class="parameters">Magnitude</p>
+                    </div>
+                    <div class="sub-filter" >
+                        <div id="filterHM" class="filter-class">
+                            <p>HM</p>
+                        </div>
+                        <p class="parameters">Heat Map</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="container2">
+            <div id="info-container" class="hide">
+                <img id="close" src="images/close.png">
+                <div id="info-title">
+                    <h4>Location Overview</h4>
+                    <img src="images/universe.png" alt="universe">
+                </div>
+                <div class="details">
+                    <h5>Status:</h5>
+                    <p id="status-info">Reviewed By Human</p>
+                </div>
+                <div class="details">
+                    <h5>Date:</h5>
+                    <p id="date-info">4th August, 2020</p>
+                </div>
+                <div class="details">
+                    <h5>Location:</h5>
+                    <p id="location-info">11mi NNE of Sincik, Turkey</p>
+                </div>
+                <div class="details">
+                    <h5>Flinn-Engdahl Regin:</h5>
+                    <p id="region-info">Turkey</p>
+                </div>
+                <div class="details">
+                    <h5>Depth:</h5>
+                    <p id="depth-info">6 mi</p>
+                </div>
+                <div class="details">
+                    <h5>Intensity</h5>
+                    <p id="intensity-info">6,695</p>
+                </div>
+                <div class="details">
+                    <h5>No of felt Reports</h5>
+                    <p id="report-info">4</p>
+                </div>
+                <div class="social-media">
+                    <h4>Share with someone via:</h4>
+                    <div>
+                        <img id="twitter" src="images/twitter 1.png">
+                        <img id="facebook" src="images/facebook 1.png">
+                        <img id="instagram" src="images/instagram 1.png">
+                        <img id="whatsapp" src="images/whatsapp 1.png">
+                    </div>
+                </div>
+                
+            </div>  
+        </div>
+        <div id="loader" class="loader"></div>
     </body>
     <script src ="script.js"></script>
     <script defer
