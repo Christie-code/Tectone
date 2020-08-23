@@ -22,7 +22,6 @@
                     <input type="image"  id="search-button" src="images/search.png" alt="search button" >
                     <img class="divider" src="images/divider.png" alt="divider">
                     <input type="image" id="filter-button" src="images/filter.png" alt="filter button" >
-    
                 </div>
             </div> 
             <div id="filter" class="hide">
@@ -83,7 +82,7 @@
                     <p id="location-info">11mi NNE of Sincik, Turkey</p>
                 </div>
                 <div class="details">
-                    <h5>Flinn-Engdahl Regin:</h5>
+                    <h5>Alert Level:</h5>
                     <p id="region-info">Turkey</p>
                 </div>
                 <div class="details">
@@ -95,7 +94,7 @@
                     <p id="intensity-info">6,695</p>
                 </div>
                 <div class="details">
-                    <h5>No of felt Reports</h5>
+                    <h5>Seismic gap</h5>
                     <p id="report-info">4</p>
                 </div>
                 <div class="social-media">
@@ -111,6 +110,10 @@
             </div>  
         </div>
         <div id="loader" class="loader"></div>
+        <div id="alert" class="alert">
+            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+            <p id="alert-message">Hello it it me </p>
+          </div>
     </body>
     <script src ="script.js"></script>
     <script defer
