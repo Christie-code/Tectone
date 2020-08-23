@@ -77,6 +77,9 @@ const getEarthquakeData = async (minlatitude, maxlatitude, minlongitude, maxlong
             let jsonResponse = await response.json();
             const image = "images/marker.png"
             clearMarkers()
+            if (jsonResponse.features.length == 0) {
+                showError("No result for search")
+            }
             for (var i = 0; i < jsonResponse.features.length; i++) {
                 const property = jsonResponse.features[i];
                 const coords = property.geometry.coordinates;
@@ -241,3 +244,4 @@ mapFilter.addEventListener("click", showFilter);
 closeFilter.addEventListener("click", hideFilter);
 hideLoader();
 hideError();
+
