@@ -19,10 +19,13 @@ const filterEight = document.getElementById('filter8');
 const filterTen = document.getElementById('filter10');
 const filterHeatmap = document.getElementById('filterHM');
 const loader = document.getElementById('loader');
+const alert = document.getElementById('alert');
+const alertMessage = document.getElementById('alert-message');
 
 //
 var map;
 var infowindow;
+var markers = [];
 // Initialize and add the map
 function initMap() {
     // The location of Akesan, Lagos
@@ -34,6 +37,18 @@ function initMap() {
     // The marker, positioned at Akesan
 //       getEarthquakeData(-90, 90, -180, 180);
 }
+
+function setMapOnAll(map) {
+    for (let i = 0; i < markers.length; i++) {
+      markers[i].setMap(map);
+    }
+  }
+
+  // Removes the markers from the map, but keeps them in the array.
+function clearMarkers() {
+    setMapOnAll(null);
+  }
+
 
 //
 const getEarthquakeData = async (minlatitude, maxlatitude, minlongitude, maxlongitude, minmagnitude, maxmagnitude) => {    let url = 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson';
@@ -61,10 +76,10 @@ const getEarthquakeData = async (minlatitude, maxlatitude, minlongitude, maxlong
         if(response.ok) {
             let jsonResponse = await response.json();
             const image = "images/marker.png"
-            
+            clearMarkers()
             for (var i = 0; i < jsonResponse.features.length; i++) {
-                console.log("Called");
-                const coords = jsonResponse.features[i].geometry.coordinates;
+                const property = jsonResponse.features[i];
+                const coords = property.geometry.coordinates;
                 const latLng = new google.maps.LatLng(coords[1],coords[0]);
                 
                 const marker = new google.maps.Marker({
@@ -72,16 +87,31 @@ const getEarthquakeData = async (minlatitude, maxlatitude, minlongitude, maxlong
                   map: map,
                   icon: image,
                 });
+                markers.push(marker)
                 marker.addListener('click', function() {
                     infowindow.close();
                     infowindow.setContent(`<div id="infowindow">${latLng}</div>`);
                     infowindow.open(map, marker);
-                    showEarthquakeDetails("Revuews by dami", "22 August, 2020", "Akesan", "Lagos", 6, 5, 8)
+
+                    var date = new Date(property.properties.time);
+                    showEarthquakeDetails(property.properties.status,
+                        date.toString(), 
+                        property.properties.place, 
+                        property.properties.alert, 
+                        property.properties.mag, 
+                        property.properties.sig, 
+                        property.properties.gap)
                   });
               }
+              hideLoader()
+        } else {
+            hideLoader()
+            showError("Couldn't get earthquake data for this location, please try another location! 😥");
         }
     } catch(error) {
         console.log(error);
+        showError(error);
+        hideLoader()
     }
 }
 
@@ -114,53 +144,46 @@ const performSearch = async (location) => {
                 const result = jsonResponse[i];
                 const boundingbox = result.boundingbox;
                 const minlatitude = boundingbox[0];
-                const minlongitude = boundingbox[1];
-                const maxlatitude = boundingbox[2];
+                const minlongitude = boundingbox[2];
+                const maxlatitude = boundingbox[1];
                 const maxlongitude = boundingbox[3];
-                getEarthquakeData(minlatitude <= maxlatitude ? minlatitude : maxlatitude, 
-                    maxlatitude >= minlatitude ? maxlatitude : minlatitude, 
-                    minlongitude <= maxlongitude ? minlongitude : maxlongitude,
-                    maxlongitude >= minlongitude ? maxlongitude : minlongitude
-                    );
-                    filterFour.addEventListener("click", () => {
-                        getEarthquakeData(minlatitude <= maxlatitude ? minlatitude : maxlatitude, 
-                            maxlatitude >= minlatitude ? maxlatitude : minlatitude, 
-                            minlongitude <= maxlongitude ? minlongitude : maxlongitude,
-                            maxlongitude >= minlongitude ? maxlongitude : minlongitude, 4
-                            );
-                    });
-                    filterSix.addEventListener("click", () => {
-                        getEarthquakeData(minlatitude <= maxlatitude ? minlatitude : maxlatitude, 
-                            maxlatitude >= minlatitude ? maxlatitude : minlatitude, 
-                            minlongitude <= maxlongitude ? minlongitude : maxlongitude,
-                            maxlongitude >= minlongitude ? maxlongitude : minlongitude, 6
-                            );
-                    });
-                    filterEight.addEventListener("click", () => {
-                        getEarthquakeData(minlatitude <= maxlatitude ? minlatitude : maxlatitude, 
-                            maxlatitude >= minlatitude ? maxlatitude : minlatitude, 
-                            minlongitude <= maxlongitude ? minlongitude : maxlongitude,
-                            maxlongitude >= minlongitude ? maxlongitude : minlongitude, 8
-                            );
-                    });
-                    filterTen.addEventListener("click", () => {
-                        getEarthquakeData(minlatitude <= maxlatitude ? minlatitude : maxlatitude, 
-                            maxlatitude >= minlatitude ? maxlatitude : minlatitude, 
-                            minlongitude <= maxlongitude ? minlongitude : maxlongitude,
-                            maxlongitude >= minlongitude ? maxlongitude : minlongitude, undefined, 10
-                            );
-                    });
+
+                getEarthquakeData(minlatitude, maxlatitude, minlongitude, maxlongitude)
+                filterFour.addEventListener("click", () => {
+                    getEarthquakeData(minlatitude, maxlatitude, minlongitude, maxlongitude);
+                });
+                filterSix.addEventListener("click", () => {
+                    getEarthquakeData(minlatitude, maxlatitude, minlongitude, maxlongitude);
+                });
+                filterEight.addEventListener("click", () => {
+                    getEarthquakeData(minlatitude, maxlatitude, minlongitude, maxlongitude);
+                });
+                filterTen.addEventListener("click", () => {
+                    getEarthquakeData(minlatitude, maxlatitude, minlongitude, maxlongitude);
+                });
             }
+        } else {
+            hideLoader()
+            showError("Couldn't get earthquake data for this location, please try another location! 😥");
         }
     } catch(error) {
         console.log(error);
+        hideLoader()
+        showError(error)
     }
 };
 
-
+searchEarthquakeInput.addEventListener("keyup", function(e) {
+    if (e.code === 'Enter') {
+        const location = searchEarthquakeInput.value;
+        showLoader()
+        performSearch(location)      
+    }
+  });
 searchButton.addEventListener("click", () => {
-   let  location = searchEarthquakeInput.value;
-   performSearch(location);
+   const location = searchEarthquakeInput.value;
+   showLoader()
+   performSearch(location)
 });
 
 const showEarthquakeDetails = (status, date, location, region, depth,  intensity, report) => {
@@ -192,15 +215,29 @@ const hideFilter = () => {
 }
 
 const showLoader = () => {
-    filterContainer.classList.add("show");
-    filterContainer.classList.remove("hide");
+    loader.classList.add("show");
+    loader.classList.remove("hide");
 }
 
 const hideLoader = () => {
-    filterContainer.classList.add("hide");
-    filterContainer.classList.remove("show");
+    loader.classList.add("hide");
+    loader.classList.remove("show");
+}
+
+const showError = (message) => {
+    alert.classList.add("show-error");
+    alert.classList.remove("hide");
+    alertMessage.innerText = message;
+}
+
+const hideError = (message) => {
+    alert.classList.remove("show-error");
+    alert.classList.add("hide");
+    alertMessage.innerText = "";
 }
 
 closeInfoDetails.addEventListener("click", hideEarthquakeDetails);
 mapFilter.addEventListener("click", showFilter);
 closeFilter.addEventListener("click", hideFilter);
+hideLoader();
+hideError();
