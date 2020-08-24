@@ -1,4 +1,4 @@
-//Selectors
+//Select elements from the index.html file
 const searchEarthquakeInput = document.getElementById('search-earthquake');
 const searchButton = document.getElementById('search-button');
 const infoContainer = document.getElementById('info-container');
@@ -22,7 +22,7 @@ const loader = document.getElementById('loader');
 const alert = document.getElementById('alert');
 const alertMessage = document.getElementById('alert-message');
 
-//
+// declaring the map variables to use
 var map;
 var infowindow;
 var markers = [];
@@ -38,20 +38,18 @@ function initMap() {
 //       getEarthquakeData(-90, 90, -180, 180);
 }
 
-function setMapOnAll(map) {
-    for (let i = 0; i < markers.length; i++) {
-      markers[i].setMap(map);
-    }
-  }
 
-  // Removes the markers from the map, but keeps them in the array.
+// Removes the markers from the map, but keeps them in the array.
 function clearMarkers() {
-    setMapOnAll(null);
+    for (let i = 0; i < markers.length; i++) {
+        markers[i].setMap(null);
+      }
   }
 
 
-//
+// get earthquake data from the api and display on the map
 const getEarthquakeData = async (minlatitude, maxlatitude, minlongitude, maxlongitude, minmagnitude, maxmagnitude) => {    let url = 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson';
+//constructing the endpoint to get earthquake data
     if(minlatitude !== undefined) {
         url = url + '&minlatitude=' + minlatitude;
     }
@@ -72,17 +70,24 @@ const getEarthquakeData = async (minlatitude, maxlatitude, minlongitude, maxlong
     }
     const endpoint = url;
     try {
+        // fetching data from the api
         const response = await fetch(endpoint);
         if(response.ok) {
+            //server returned a positive response
             let jsonResponse = await response.json();
+            // custom image for the markers
             const image = "images/marker.png"
+            // clear existing markers that was on the screen before displaying new ones
             clearMarkers()
+            // check for earthquake data from a search
             if (jsonResponse.features.length == 0) {
-                showError("No result for search")
+                showError("Couldn't get earthquake data for this location, please try another location! 😥");
+                return;
             }
+            // loop through to get earthquake data to display
             for (var i = 0; i < jsonResponse.features.length; i++) {
-                const property = jsonResponse.features[i];
-                const coords = property.geometry.coordinates;
+                const responseObj = jsonResponse.features[i];
+                const coords = responseObj.geometry.coordinates;
                 const latLng = new google.maps.LatLng(coords[1],coords[0]);
                 
                 const marker = new google.maps.Marker({
@@ -92,18 +97,21 @@ const getEarthquakeData = async (minlatitude, maxlatitude, minlongitude, maxlong
                 });
                 markers.push(marker)
                 marker.addListener('click', function() {
+                    // to display an infowindow: there are 3 basic steps: to close, to set and then to open
                     infowindow.close();
                     infowindow.setContent(`<div id="infowindow">${latLng}</div>`);
                     infowindow.open(map, marker);
 
-                    var date = new Date(property.properties.time);
-                    showEarthquakeDetails(property.properties.status,
+                    //convert time from millisecond to date readable format
+                    var date = new Date(responseObj.properties.time);
+                    //display the earthquake details
+                    showEarthquakeDetails(responseObj.properties.status,
                         date.toString(), 
-                        property.properties.place, 
-                        property.properties.alert, 
-                        property.properties.mag, 
-                        property.properties.sig, 
-                        property.properties.gap)
+                        responseObj.properties.place, 
+                        responseObj.properties.alert, 
+                        responseObj.properties.mag, 
+                        responseObj.properties.sig, 
+                        responseObj.properties.gap)
                   });
               }
               hideLoader()
