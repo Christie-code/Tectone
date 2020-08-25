@@ -88,7 +88,7 @@ function initMap() {
     // The map, centered at Akesan
     map = new google.maps.Map(
         document.getElementById('map'), {zoom: 4, center: akesan,
-            mapTypeId: "satellite"
+            mapTypeId: "terrain"
     });
     map.data.setStyle(styleFeature);
     infowindow = new google.maps.InfoWindow();
